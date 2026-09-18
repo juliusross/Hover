@@ -3,41 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hover — Character Viewer</title>
+    <title>Hover — Tiny Brawler</title>
   </head>
   <body>
-    <aside class="hud" aria-label="Character controls">
+    <aside class="hud" aria-label="Brawler HUD">
       <header>
         <p class="kicker">Hover</p>
-        <h1>Character viewer</h1>
+        <h1>Tiny brawler</h1>
       </header>
+      <section>
+        <h2>HP</h2>
+        <p id="hud-hp" class="hp">●●●●●  5/5</p>
+      </section>
+      <section>
+        <h2>Enemies</h2>
+        <p id="hud-enemies" class="enemies">4 / 4</p>
+      </section>
       <section>
         <h2>State</h2>
         <p id="hud-state" class="state">Loading</p>
         <p id="hud-clip" class="clip">clip: —</p>
       </section>
       <section>
-        <h2>Move</h2>
+        <h2>How to play</h2>
         <ul class="keys">
-          <li><kbd>W A S D</kbd> / arrows — walk</li>
-          <li><kbd>Shift</kbd> — run</li>
-          <li><kbd>Space</kbd> — jump</li>
+          <li><kbd>W A S D</kbd> walk · <kbd>Shift</kbd> run</li>
+          <li><kbd>Space</kbd> jump · <kbd>F</kbd> punch</li>
+          <li><kbd>R</kbd> restart wave</li>
         </ul>
       </section>
       <section>
-        <h2>One-shots</h2>
         <div class="buttons">
-          <button type="button" data-clip="Punch_Combo_2">Punch</button>
-          <button type="button" data-clip="Hit_Reaction">Hit</button>
-          <button type="button" data-clip="Listening_Gesture">Listen</button>
-          <button type="button" data-clip="Dead">Dead</button>
+          <button type="button" id="btn-punch">Punch</button>
         </div>
       </section>
-      <section>
-        <h2>Clips in GLB</h2>
-        <ul id="hud-clips" class="clips"><li>loading…</li></ul>
-      </section>
     </aside>
+
+    <div id="banner" class="banner" hidden>
+      <p id="banner-title">Wave cleared</p>
+      <p id="banner-hint">Press R for another wave</p>
+    </div>
 
     <div id="loader" class="loader">
       <div class="loader-card">
