@@ -4,6 +4,17 @@ A small **Vite + React + TypeScript + React Three Fiber + Drei** app that loads 
 
 The original [Hover.css](README.hover-css.md) sources (`css/`, `scss/`, `less/`) and demo page (`hover-demo.html`) are still in this repo. This README is for the character viewer, which is now the app `npm run dev` / `npm run build` run.
 
+## Preview
+
+![Idle](docs/preview/idle.webp)
+
+![Walk](docs/preview/walk.webp)
+
+![Run](docs/preview/run.webp)
+
+[Demo video](docs/preview/demo.mp4)
+
+
 ## Setup
 
 ```bash
