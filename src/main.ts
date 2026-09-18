@@ -89,6 +89,7 @@ let mixer: THREE.AnimationMixer | null = null
 let currentClip: string | null = null
 let oneShot: string | null = null
 let jumpHeld = false
+let pendingJump = false
 let pendingOneShot: string | null = null
 let shownState = ''
 let shownClip = ''
@@ -236,6 +237,7 @@ window.addEventListener('keydown', (event) => {
   if (BLOCK.has(event.code)) event.preventDefault()
   if (event.repeat) return
   applyKey(event.code, true)
+  if (event.code === 'Space') pendingJump = true
 })
 window.addEventListener('keyup', (event) => applyKey(event.code, false))
 window.addEventListener('blur', () => {
@@ -318,7 +320,8 @@ renderer.setAnimationLoop(() => {
     play(oneShot, { loop: false, clamp: true, fade: oneShot === 'Dead' ? 0.12 : 0.18 })
   }
 
-  const jumpPressed = keys.jump && !jumpHeld
+  const jumpPressed = pendingJump || (keys.jump && !jumpHeld)
+  pendingJump = false
   jumpHeld = keys.jump
   const wantsMove = keys.forward || keys.back || keys.left || keys.right
   if (oneShot === 'Dead' && wantsMove) oneShot = null
