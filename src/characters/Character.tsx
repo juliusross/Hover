@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, type MutableRefObject, type RefObject } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject, type RefObject } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useAnimations, useGLTF } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { useKeyboard } from '../controls/useKeyboard'
@@ -39,7 +39,15 @@ export function Character({
 }: CharacterProps) {
   const { scene, animations } = useGLTF(MODEL_URL)
   const clone = useMemo(() => cloneSkinned(scene), [scene])
-  const { actions, mixer } = useAnimations(animations, groupRef)
+  const mixer = useMemo(() => new THREE.AnimationMixer(clone), [clone])
+  const actions = useMemo(() => {
+    const map: Record<string, THREE.AnimationAction> = {}
+    for (const clip of animations) {
+      map[clip.name] = mixer.clipAction(clip, clone)
+    }
+    return map
+  }, [animations, mixer, clone])
+
   const keys = useKeyboard()
   const { play, current } = useAnimationMachine()
   const { step } = useCharacterMovement()
@@ -49,9 +57,13 @@ export function Character({
 
   useEffect(() => {
     clone.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        obj.castShadow = true
-        obj.receiveShadow = true
+      const mesh = obj as THREE.SkinnedMesh
+      if (mesh.isMesh) {
+        mesh.castShadow = true
+        mesh.receiveShadow = true
+      }
+      if (mesh.isSkinnedMesh) {
+        mesh.frustumCulled = false
       }
     })
   }, [clone])
@@ -60,14 +72,19 @@ export function Character({
     onClipsLoaded(animations.map((clip) => clip.name))
   }, [animations, onClipsLoaded])
 
-  useEffect(() => {
-    play(actions, CLIPS.walk, { pauseAtStart: true, loop: false, fade: 0.05 })
+  useLayoutEffect(() => {
+    play(actions, CLIPS.walk, { pauseAtStart: true, loop: false, fade: 0 })
+    mixer.update(1 / 60)
     onStateChange('Idle', CLIPS.walk)
-  }, [actions, play, onStateChange])
+    return () => {
+      mixer.stopAllAction()
+    }
+  }, [actions, mixer, play, onStateChange])
 
   useEffect(() => {
     const onFinished = (event: { action: THREE.AnimationAction }) => {
       const finished = event.action.getClip().name
+      if (finished === 'Dead') return
       if (oneShotActive.current === finished) {
         oneShotActive.current = null
       }
@@ -127,6 +144,8 @@ export function Character({
       hudState.current = { state: nextState, clip }
       onStateChange(nextState, clip)
     }
+
+    mixer.update(dt)
   })
 
   return (

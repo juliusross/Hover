@@ -21,7 +21,7 @@ export function Scene({
   return (
     <>
       <color attach="background" args={['#8aa0b0']} />
-      <fog attach="fog" args={['#8aa0b0', 14, 42]} />
+      <fog attach="fog" args={['#8aa0b0', 22, 80]} />
       <Lights />
       <Ground />
       <Character

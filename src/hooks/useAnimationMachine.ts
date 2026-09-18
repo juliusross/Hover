@@ -22,7 +22,7 @@ export function useAnimationMachine() {
 
   const play = useCallback((actions: Actions, name: string, opts: PlayOpts = {}) => {
     const next = actions[name]
-    if (!next) return
+    if (!next) return false
 
     const {
       loop = true,
@@ -33,39 +33,43 @@ export function useAnimationMachine() {
     } = opts
 
     const sameClip = current.current === name
-    if (sameClip) {
+    if (sameClip && next.isScheduled()) {
       if (pauseAtStart) {
-        if (!next.paused) {
-          next.paused = true
+        if (next.timeScale !== 0) {
           next.time = 0
           next.timeScale = 0
+          next.paused = false
         }
-      } else if (next.paused || next.timeScale === 0) {
+      } else if (next.timeScale === 0 || next.paused) {
         next.paused = false
         next.time = 0
         next.timeScale = timeScale
         next.setLoop(THREE.LoopRepeat, Infinity)
       }
-      return
+      return true
     }
 
     next.enabled = true
     next.reset()
-    next.timeScale = pauseAtStart ? 0 : timeScale
-    next.paused = pauseAtStart
+    next.paused = false
     next.time = 0
+    next.timeScale = pauseAtStart ? 0 : timeScale
     next.clampWhenFinished = clamp
     next.setLoop(loop && !pauseAtStart ? THREE.LoopRepeat : THREE.LoopOnce, loop && !pauseAtStart ? Infinity : 1)
-    next.fadeIn(fade)
-    next.play()
 
     const prevName = current.current
     const prev = prevName ? actions[prevName] : null
     if (prev && prev !== next) {
+      next.fadeIn(fade)
       prev.fadeOut(fade)
+    } else {
+      next.weight = 1
+      next.setEffectiveWeight(1)
     }
+    next.play()
 
     current.current = name
+    return true
   }, [])
 
   return { current, play }
