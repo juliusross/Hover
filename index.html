@@ -6,7 +6,51 @@
     <title>Hover — Character Viewer</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <aside class="hud" aria-label="Character controls">
+      <header>
+        <p class="kicker">Hover</p>
+        <h1>Character viewer</h1>
+      </header>
+      <section>
+        <h2>State</h2>
+        <p id="hud-state" class="state">Loading</p>
+        <p id="hud-clip" class="clip">clip: —</p>
+      </section>
+      <section>
+        <h2>Move</h2>
+        <ul class="keys">
+          <li><kbd>W A S D</kbd> / arrows — walk</li>
+          <li><kbd>Shift</kbd> — run</li>
+          <li><kbd>Space</kbd> — jump</li>
+        </ul>
+      </section>
+      <section>
+        <h2>One-shots</h2>
+        <div class="buttons">
+          <button type="button" data-clip="Punch_Combo_2">Punch</button>
+          <button type="button" data-clip="Hit_Reaction">Hit</button>
+          <button type="button" data-clip="Listening_Gesture">Listen</button>
+          <button type="button" data-clip="Dead">Dead</button>
+        </div>
+      </section>
+      <section>
+        <h2>Clips in GLB</h2>
+        <ul id="hud-clips" class="clips"><li>loading…</li></ul>
+      </section>
+    </aside>
+
+    <div id="loader" class="loader">
+      <div class="loader-card">
+        <p class="kicker">Hover</p>
+        <h1>Loading character</h1>
+        <p class="path">/models/character.glb</p>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+          <span id="loader-bar"></span>
+        </div>
+        <p id="loader-meta" class="meta">0%</p>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

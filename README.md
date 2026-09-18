@@ -1,8 +1,10 @@
 # Hover — Character Viewer
 
-A small **Vite + React + TypeScript + React Three Fiber + Drei** app that loads the Mixamo-style humanoid at `public/models/character.glb`, plays its clips, and walks around with WASD.
+A small **Vite + TypeScript + vanilla Three.js** app that loads the Mixamo-style humanoid at `public/models/character.glb`, plays its clips, and walks around with WASD.
 
-The original [Hover.css](README.hover-css.md) sources (`css/`, `scss/`, `less/`) and demo page (`hover-demo.html`) are still in this repo. This README is for the character viewer, which is now the app `npm run dev` / `npm run build` run.
+No React. No React Three Fiber. One entry: `index.html` + `src/main.ts`.
+
+The original [Hover.css](README.hover-css.md) sources (`css/`, `scss/`, `less/`) and demo page (`hover-demo.html`) are still in this repo.
 
 ## Preview
 
@@ -13,7 +15,6 @@ The original [Hover.css](README.hover-css.md) sources (`css/`, `scss/`, `less/`)
 ![Run](docs/preview/run.webp)
 
 [Demo video](docs/preview/demo.mp4)
-
 
 ## Setup
 
@@ -40,7 +41,7 @@ npm run preview
 | `Space` | `Regular_Jump` one-shot, then back to Idle / Walk / Run |
 | HUD buttons | One-shots: Punch (`Punch_Combo_2`), Hit (`Hit_Reaction`), Listen (`Listening_Gesture`), Dead (`Dead`) |
 
-Movement is stepped in `useFrame` from keyboard refs (frame-rate independent). Animation state is a separate mixer machine — clips are not restarted every frame.
+Movement and animation are updated in the Three.js render loop. Clips are not restarted every frame.
 
 ## Animation clips
 
@@ -49,7 +50,7 @@ Inspected from the GLB (13 clips):
 | Clip | Duration | Used as |
 | --- | --- | --- |
 | `restpose` | 0.083s | **Not looped.** Too short to be a usable idle cycle. |
-| `Walking` | 1.083s | Walk loop. **Idle** holds this clip paused at `t = 0` (a quiet standing pose). |
+| `Walking` | 1.083s | Walk loop. **Idle** holds this clip paused at `t = 0`. |
 | `Running` | 0.708s | Run loop (Shift). Chosen over `RunFast` (0.542s) for a more readable stride at ~5 m/s. |
 | `Regular_Jump` | 2.000s | Space one-shot |
 | `Punch_Combo_2` | 5.083s | HUD one-shot |
@@ -71,11 +72,10 @@ The skinned mesh is **~115,730 verts / ~198,220 tris**. That is a heavy characte
 ## Project layout
 
 ```
+index.html
+src/main.ts
+src/style.css
 public/models/character.glb
-src/components/   Scene, lights, ground, follow camera, HUD, loader
-src/characters/   GLB actor + clip constants
-src/controls/     Keyboard ref
-src/hooks/        Movement + mixer state machine
 ```
 
-No physics library in v1. The ground is a plane; jump is animation-only.
+No physics library. The ground is a plane; jump is animation-only.
